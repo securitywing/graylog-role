@@ -7,11 +7,12 @@ Parameters:
     Default: ProdAccountKinesisStreamRole
   LogGroupName:
     Type: String
-    Default: /aws/lambda/sixth-authorizer
+    Default: /aws/lambda/s3collector
   KinesisARN:
     Type: String
     Description: ARN of kinesis stream.
-    Default: arn:aws:kinesis:eu-west-1:607281769355:stream/lambda-stream
+    Default: 
+arn:aws:kinesis:eu-west-1:AWS_Account_ID:stream/kinesis-stream-name
 
 #####################  Resources ###########################
 Resources:  
