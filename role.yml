@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >-
+  AWS CloudFormation Template to create a role 
+Parameters:
+  RoleName:
+    Type: String
+    Default: ProdAccountKinesisStreamRole
+  LogGroupName:
+    Type: String
+    Default: /aws/lambda/sixth-authorizer
+  KinesisARN:
+    Type: String
+    Description: ARN of kinesis stream.
+    Default: arn:aws:kinesis:eu-west-1:607281769355:stream/lambda-stream
+
+#####################  Resources ###########################
+Resources:  
+  LogSubscriptionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref RoleName
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: [logs.eu-west-1.amazonaws.com]
+          Action: ['sts:AssumeRole']
+      Path: /
+      Policies:
+      - PolicyName: CloudWatchLogPermission
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+          - Effect: Allow
+            Action: ['kinesis:PutRecord']
+            Resource: !Ref KinesisARN
+  SubscriptionFilter: 
+      Type: AWS::Logs::SubscriptionFilter
+      Properties: 
+        RoleArn: 
+          Fn::GetAtt: 
+            - "LogSubscriptionRole"
+            - "Arn"
+        LogGroupName: 
+          Ref: "LogGroupName"
+        FilterPattern: ""
+        DestinationArn: !Ref KinesisARN
+          # Fn::GetAtt: 
+          #   - "KinesisStream"
+          #   - "Arn"
+    
+#########################  Output  ###########################
+  
+Outputs:
+  RoleName:
+    Value: !Ref 'LogSubscriptionRole'
